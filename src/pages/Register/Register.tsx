@@ -1,35 +1,12 @@
 import { Input } from "../../components/Input/Input";
 import logo from "../../assets/icons/icon-ibuss.svg";
 import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { User, Mail, Lock, CreditCard, Phone } from "lucide-react";
 import { PatternFormat } from "react-number-format";
-
-const registerSchema = z
-  .object({
-    name: z.string().min(1, "Nome é obrigatório").min(3, "Mínimo 3 caracteres"),
-    cpf: z
-      .string()
-      .min(1, "CPF é obrigatório")
-      .regex(/^\d{11}$/, "CPF deve conter 11 números"),
-    phone: z
-      .string()
-      .min(1, "Telefone é obrigatório")
-      .regex(/^\d{11}$/, "Telefone deve conter 11 números"),
-    email: z.string().min(1, "Email é obrigatório").email("Email inválido"),
-    password: z
-      .string()
-      .min(1, "Senha é obrigatória")
-      .min(6, "Mínimo 6 caracteres"),
-    confirmPassword: z.string().min(1, "Confirmação é obrigatória"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
-
-type FormData = z.infer<typeof registerSchema>;
+import { registerSchema } from "../../schemas/register.schemas";
+import type { RegisterFormData } from "../../schemas/register.schemas";
 
 export function Register() {
   const {
@@ -38,7 +15,7 @@ export function Register() {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -50,8 +27,11 @@ export function Register() {
     },
   });
 
-  function onSubmit(data: FormData) {
+  const [success, setSuccess] = useState(false);
+
+  function onSubmit(data: RegisterFormData) {
     console.log(data);
+    setSuccess(true);
     reset();
   }
 
@@ -157,6 +137,24 @@ export function Register() {
           </span>
         </form>
       </div>
+      {success && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
+            <h2 className="text-lg font-semibold text-(--color-primary)">
+              Sucesso!
+            </h2>
+            <p className="text-sm text-gray-600 text-center">
+              Cadastro realizado com sucesso!
+            </p>
+            <button
+              onClick={() => setSuccess(false)}
+              className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
