@@ -1,12 +1,16 @@
-import { Input } from "../../components/Input/Input";
-import logo from "../../assets/icons/icon-ibuss.svg";
-import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router-dom";
 import { User, Mail, Lock, CreditCard, Phone } from "lucide-react";
 import { PatternFormat } from "react-number-format";
+
 import { registerSchema } from "../../schemas/register.schemas";
 import type { RegisterFormData } from "../../schemas/register.schemas";
+
+import { Input } from "../../components/Input/Input";
+
+import logo from "../../assets/icons/icon-ibuss.svg";
 
 export function Register() {
   const {
@@ -39,9 +43,7 @@ export function Register() {
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-(--color-background)">
       <img src={logo} alt="Logo iBuss" className="w-20 mb-2" />
       <div className="w-full max-w-[320px] bg-(--color-secondary) rounded-3xl shadow-lg flex flex-col items-center gap-5 py-12 px-6">
-        <h1 className="text-center text-xl font-semibold text-(--color-primary)">
-          Crie sua conta
-        </h1>
+        <h1 className="text-center text-xl font-semibold text-(--color-primary)">Crie sua conta</h1>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -131,21 +133,17 @@ export function Register() {
 
           <span className="text-sm text-(--color-primary) mt-3">
             Já tem uma conta?{" "}
-            <a href="#" className="underline font-medium">
+            <Link to="/" className="underline font-medium">
               Faça o login
-            </a>
+            </Link>
           </span>
         </form>
       </div>
       {success && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
-            <h2 className="text-lg font-semibold text-(--color-primary)">
-              Sucesso!
-            </h2>
-            <p className="text-sm text-gray-600 text-center">
-              Cadastro realizado com sucesso!
-            </p>
+            <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
+            <p className="text-sm text-gray-600 text-center">Cadastro realizado com sucesso!</p>
             <button
               onClick={() => setSuccess(false)}
               className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
