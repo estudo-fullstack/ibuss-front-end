@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { User, Mail, Lock, CreditCard, Phone } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 
+import { createUser } from "../../api/user.api";
 import { registerSchema } from "../../schemas/register.schemas";
 import type { RegisterFormData } from "../../schemas/register.schemas";
 
@@ -32,11 +35,41 @@ export function Register() {
   });
 
   const [success, setSuccess] = useState(false);
+  
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const registerMutation = useMutation({
+    mutationFn: createUser,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: () => {
+      setSuccess(true);
+      reset();
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        const apiMessage = error.response?.data?.message;
+
+        if (typeof apiMessage === "string" && apiMessage.trim()) {
+          setSubmitError(apiMessage);
+          return;
+        }
+      }
+
+      setSubmitError("Nao foi possivel realizar o cadastro. Tente novamente.");
+    },
+  });
 
   function onSubmit(data: RegisterFormData) {
-    console.log(data);
-    setSuccess(true);
-    reset();
+    registerMutation.mutate({
+      name: data.name,
+      cpf: data.cpf,
+      phoneNumber: data.phone,
+      email: data.email,
+      password: data.password,
+      passwordConfirmation: data.confirmPassword,
+    });
   }
 
   return (
@@ -124,11 +157,14 @@ export function Register() {
             error={errors.confirmPassword?.message}
           />
 
+          {submitError && <p className="w-full text-sm text-red-500 text-center">{submitError}</p>}
+
           <button
             type="submit"
+            disabled={registerMutation.isPending}
             className="w-35.5 h-8.5 bg-(--color-primary) text-white rounded-[10px] mt-2 cursor-pointer"
           >
-            Cadastrar
+            {registerMutation.isPending ? "Cadastrando..." : "Cadastrar"}
           </button>
 
           <span className="text-sm text-(--color-primary) mt-3">
