@@ -1,4 +1,5 @@
 import * as z from "zod";
+
 import { validateCPF } from "../utils/validateCPF";
 
 export const registerSchema = z

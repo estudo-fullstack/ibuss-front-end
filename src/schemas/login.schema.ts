@@ -1,2 +1,13 @@
-// Schema para validação de login
-// Será implementado posteriormente.
+import * as z from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().min(1, "Email é obrigatório").email("Formato de email inválido").toLowerCase(),
+
+  password: z
+    .string()
+    .min(1, "Senha é obrigatória")
+    .min(6, "Mínimo 6 caracteres")
+    .max(12, "Máximo 12 caracteres"),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;

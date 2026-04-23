@@ -12,9 +12,14 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "axios": "1.14.0",
+    "lucide-react": "^1.8.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "react-number-format": "^5.4.5",
+    "react-router-dom": "^7.9.5",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
