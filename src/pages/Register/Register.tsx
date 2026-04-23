@@ -9,7 +9,7 @@ import { PatternFormat } from "react-number-format";
 
 import { createUser } from "../../api/user.api";
 import { registerSchema } from "../../schemas/register.schemas";
-import type { RegisterFormData } from "../../schemas/register.schemas";
+import type { RegisterFormData, RegisterPayload } from "../../schemas/register.schemas";
 
 import { Input } from "../../components/Input/Input";
 
@@ -35,7 +35,7 @@ export function Register() {
   });
 
   const [success, setSuccess] = useState(false);
-  
+
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const registerMutation = useMutation({
@@ -61,7 +61,7 @@ export function Register() {
     },
   });
 
-  function onSubmit(data: RegisterFormData) {
+  function onSubmit(data: RegisterPayload) {
     registerMutation.mutate({
       name: data.name,
       cpf: data.cpf,
