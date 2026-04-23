@@ -68,7 +68,6 @@ export function Register() {
       phoneNumber: data.phone,
       email: data.email,
       password: data.password,
-      passwordConfirmation: data.confirmPassword,
     });
   }
 
