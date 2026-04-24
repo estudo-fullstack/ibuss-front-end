@@ -5,3 +5,8 @@ export type CreateUserType = {
   phoneNumber: string;
   password: string;
 };
+
+export type LoginUserType = {
+  email: string;
+  password: string;
+};
