@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { Mail, Lock } from "lucide-react";
 
+import { loginUser } from "../../api/user.api";
 import { loginSchema } from "../../schemas/login.schema";
 import type { LoginFormData } from "../../schemas/login.schema";
 
@@ -26,11 +29,39 @@ export function Login() {
   });
 
   const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: (response) => {
+      const token = response.token ?? response.accessToken;
+
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
+      setSuccess(true);
+      reset();
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        const apiMessage = error.response?.data?.message;
+
+        if (typeof apiMessage === "string" && apiMessage.trim()) {
+          setSubmitError(apiMessage);
+          return;
+        }
+      }
+
+      setSubmitError("Nao foi possivel realizar o login. Tente novamente.");
+    },
+  });
 
   function onSubmit(data: LoginFormData) {
-    console.log(data);
-    setSuccess(true);
-    reset();
+    loginMutation.mutate(data);
   }
 
   return (
@@ -64,6 +95,8 @@ export function Login() {
             error={errors.password?.message}
           />
 
+          {submitError && <p className="w-full text-sm text-red-500 text-center">{submitError}</p>}
+
           <span className="w-full text-sm text-(--color-primary) -mt-2">
             <a href="#" className="underline font-medium">
               Esqueci minha senha
@@ -72,9 +105,10 @@ export function Login() {
 
           <button
             type="submit"
+            disabled={loginMutation.isPending}
             className="w-35.5 h-8.5 bg-(--color-primary) text-white rounded-[10px] mt-2 cursor-pointer"
           >
-            Entrar
+            {loginMutation.isPending ? "Entrando..." : "Entrar"}
           </button>
 
           <span className="text-sm text-(--color-primary) mt-3">
