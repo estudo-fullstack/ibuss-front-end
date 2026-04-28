@@ -50,7 +50,7 @@ export function Login() {
         setSubmitError(error.message);
         return;
       }
-      setSubmitError("Não foi possível realizar o cadastro. Tente novamente.");
+      setSubmitError("Não foi possível realizar o login. Tente novamente.");
     },
   });
 
