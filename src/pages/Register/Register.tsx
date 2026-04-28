@@ -7,8 +7,8 @@ import { User, Mail, Lock, CreditCard, Phone } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 
 import { createUser } from "../../api/user.api";
-import { registerSchema } from "../../schemas/register.schemas";
-import type { RegisterFormData, RegisterPayload } from "../../schemas/register.schemas";
+import { registerSchema } from "../../schemas/register-schemas";
+import type { RegisterFormData, RegisterPayload } from "../../schemas/register-schemas";
 
 import { Input } from "../../components/Input/Input";
 
@@ -34,7 +34,6 @@ export function Register() {
   });
 
   const [success, setSuccess] = useState(false);
-
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const registerMutation = useMutation({
@@ -83,7 +82,6 @@ export function Register() {
             error={errors.name?.message}
           />
 
-          {/* CPF com Máscara e salvando apenas os números limpos */}
           <Controller
             name="cpf"
             control={control}
@@ -103,7 +101,6 @@ export function Register() {
             )}
           />
 
-          {/* Telefone com Máscara e salvando apenas os números limpos */}
           <Controller
             name="phone"
             control={control}

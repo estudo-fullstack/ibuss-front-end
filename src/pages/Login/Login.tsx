@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 
 import { loginUser } from "../../api/user.api";
-import { loginSchema } from "../../schemas/login.schema";
-import type { LoginFormData } from "../../schemas/login.schema";
+import { loginSchema } from "../../schemas/login-schema";
+import type { LoginFormData } from "../../schemas/login-schema";
 
 import { Input } from "../../components/Input/Input";
 
@@ -92,9 +92,9 @@ export function Login() {
           {submitError && <p className="w-full text-sm text-red-500 text-center">{submitError}</p>}
 
           <span className="w-full text-sm text-(--color-primary) -mt-2">
-            <a href="#" className="underline font-medium">
+            <Link to="/forgot-password" className="underline font-medium">
               Esqueci minha senha
-            </a>
+            </Link>
           </span>
 
           <button
@@ -107,7 +107,7 @@ export function Login() {
 
           <span className="text-sm text-(--color-primary) mt-3">
             Não tem uma conta?{" "}
-            <Link to="/cadastro" className="underline font-medium">
+            <Link to="/register" className="underline font-medium">
               Cadastre-se
             </Link>
           </span>

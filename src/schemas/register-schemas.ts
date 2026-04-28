@@ -1,5 +1,4 @@
 import * as z from "zod";
-
 import { validateCPF } from "../utils/validateCPF";
 
 export const registerSchema = z
@@ -8,9 +7,9 @@ export const registerSchema = z
       .string()
       .min(1, "Nome é obrigatório")
       .min(3, "Mínimo 3 caracteres")
-      .max(100, "Máximo 100 caracteres"),
+      .max(100, "Máximo 100 caracteres")
+      .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, "Nome deve conter apenas letras"),
 
-    // Validação de CPF
     cpf: z
       .string()
       .min(1, "CPF é obrigatório")
@@ -23,7 +22,6 @@ export const registerSchema = z
       .min(1, "Telefone é obrigatório")
       .regex(/^\d{11}$/, "Telefone deve conter 11 números"),
 
-    // Validação de Email
     email: z
       .string()
       .min(1, "Email é obrigatório")
@@ -37,7 +35,8 @@ export const registerSchema = z
       .max(12, "Máximo 12 caracteres")
       .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
       .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
-      .regex(/[0-9]/, "Deve conter pelo menos um número"),
+      .regex(/[0-9]/, "Deve conter pelo menos um número")
+      .regex(/^\S+$/, "Senha não deve conter espaços"),
 
     confirmPassword: z.string().min(1, "Confirmação é obrigatória"),
   })
@@ -48,4 +47,4 @@ export const registerSchema = z
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
-export type RegisterPayload = Omit<RegisterFormData, 'confirmPassword'>;
+export type RegisterPayload = Omit<RegisterFormData, "confirmPassword">;
