@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { User, Mail, Lock, CreditCard, Phone } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 
@@ -47,15 +46,10 @@ export function Register() {
       reset();
     },
     onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        const apiMessage = error.response?.data?.message;
-
-        if (typeof apiMessage === "string" && apiMessage.trim()) {
-          setSubmitError(apiMessage);
-          return;
-        }
+      if (typeof error.message === "string") {
+        setSubmitError(error.message);
+        return;
       }
-
       setSubmitError("Nao foi possivel realizar o cadastro. Tente novamente.");
     },
   });

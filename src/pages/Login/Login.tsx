@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { Mail, Lock } from "lucide-react";
 
 import { loginUser } from "../../api/user.api";
@@ -47,15 +46,10 @@ export function Login() {
       reset();
     },
     onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        const apiMessage = error.response?.data?.message;
-
-        if (typeof apiMessage === "string" && apiMessage.trim()) {
-          setSubmitError(apiMessage);
-          return;
-        }
+      if (typeof error.message === "string") {
+        setSubmitError(error.message);
+        return;
       }
-
       setSubmitError("Não foi possível realizar o login. Tente novamente.");
     },
   });
