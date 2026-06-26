@@ -41,7 +41,9 @@ export function Home() {
           <img src={logoBlue} alt="Logo iBuss" className="w-20" />
         </div>
 
-        <h1 className="text-3xl font-extrabold text-(--color-primary) text-center">Minhas passagens</h1>
+        <h1 className="text-3xl font-extrabold text-(--color-primary) text-center">
+          Minhas passagens
+        </h1>
 
         <div className="w-full px-6 flex justify-end">
           {" "}
@@ -57,7 +59,7 @@ export function Home() {
                 <TicketCard key={ticket.id} {...ticket} />
               ))}
               <div className="flex justify-center mt-6">
-                <button className="text-sm text-(--color-primary) underline cursor-pointer">
+                <button className="text-sm font-medium text-(--color-icons) underline cursor-pointer">
                   Atualizar
                 </button>
               </div>
