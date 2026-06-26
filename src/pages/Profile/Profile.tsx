@@ -10,6 +10,9 @@ import type { UserProfileType } from "../../api/types";
 
 import { Input } from "../../components/Input/Input";
 import { Navbar } from "../../components/Navbar/Navbar";
+import { ProfileField } from "../../components/ProfileField/ProfileField";
+import { Button } from "../../components/Button/Button";
+import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 
 import logo from "../../assets/icons/icon-ibuss.svg";
 
@@ -57,6 +60,7 @@ export function Profile() {
     // TODO: integrar com API de exclusão de conta
     setShowDeleteModal(false);
   }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-97.5 min-h-screen flex flex-col gap-4 bg-(--color-background) shadow-[0_0_40px_rgba(0,0,0,0.15)] rounded-3xl overflow-y-auto relative">
@@ -87,28 +91,25 @@ export function Profile() {
           <div
             className={`bg-white rounded-2xl shadow p-3 flex flex-col ${isEditing ? "gap-3" : "gap-6"}`}
           >
-            <div className="flex flex-col gap-1 border-l-4 border-(--color-secondary) pl-3">
-              <span className="text-xs text-(--color-icons) font-medium">Nome completo</span>
-              {isEditing ? (
-                <Input name="name" register={register} error={errors.name?.message} />
-              ) : (
-                <span className="text-sm font-semibold text-(--color-primary)">
-                  {mockUser.name}
-                </span>
-              )}
-            </div>
+            <ProfileField
+              label="Nome completo"
+              value={mockUser.name}
+              isEditing={isEditing}
+              editContent={<Input name="name" register={register} error={errors.name?.message} />}
+            />
 
-            <div className="flex flex-col gap-1 border-l-4 border-(--color-secondary) pl-3">
-              <span className="text-xs text-(--color-icons) font-medium">CPF</span>
-              <span className="text-sm font-semibold text-(--color-primary)">{mockUser.cpf}</span>
-              {isEditing && (
-                <span className="text-xs text-gray-400">O CPF não pode ser alterado.</span>
-              )}
-            </div>
+            <ProfileField
+              label="CPF"
+              value={mockUser.cpf}
+              isEditing={isEditing}
+              helperText="O CPF não pode ser alterado."
+            />
 
-            <div className="flex flex-col gap-1 border-l-4 border-(--color-secondary) pl-3">
-              <span className="text-xs text-(--color-icons) font-medium">Celular</span>
-              {isEditing ? (
+            <ProfileField
+              label="Celular"
+              value={mockUser.phoneNumber}
+              isEditing={isEditing}
+              editContent={
                 <Controller
                   name="phoneNumber"
                   control={control}
@@ -125,66 +126,64 @@ export function Profile() {
                     />
                   )}
                 />
-              ) : (
-                <span className="text-sm font-semibold text-(--color-primary)">
-                  {mockUser.phoneNumber}
-                </span>
-              )}
-            </div>
+              }
+            />
 
-            <div className="flex flex-col gap-1 border-l-4 border-(--color-secondary) pl-3">
-              <span className="text-xs text-(--color-icons) font-medium">E-mail</span>
-              {isEditing ? (
+            <ProfileField
+              label="E-mail"
+              value={mockUser.email}
+              isEditing={isEditing}
+              editContent={
                 <Input
                   name="email"
                   register={register}
                   type="email"
                   error={errors.email?.message}
                 />
-              ) : (
-                <span className="text-sm font-semibold text-(--color-primary)">
-                  {mockUser.email}
-                </span>
-              )}
-            </div>
+              }
+            />
           </div>
         </div>
 
         {!isEditing && (
           <div className="flex justify-center gap-3">
-            <button
+            <Button
+              variant="primary"
+              icon={<Pencil className="w-4 h-4" />}
+              className="w-36 h-10"
               onClick={() => setIsEditing(true)}
-              className="w-36 h-10 bg-(--color-primary) text-white rounded-full flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Pencil className="w-4 h-4" />
               Editar perfil
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger"
+              icon={<Trash2 className="w-4 h-4" />}
+              className="w-36 h-10 mx-auto"
               onClick={() => setShowDeleteModal(true)}
-              className="w-36 h-10 mx-auto bg-red-500 text-white rounded-full flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Trash2 className="w-4 h-4" />
               Excluir conta
-            </button>
+            </Button>
           </div>
         )}
 
         {isEditing && (
-          <div className="flex justify-center gap-3 ">
-            <button
+          <div className="flex justify-center gap-3">
+            <Button
+              variant="primary"
+              icon={<X className="w-4 h-4" />}
+              className="px-4 py-2 text-sm font-medium"
               onClick={handleCancel}
-              className="px-4 py-2 flex gap-1 bg-(--color-primary) text-white rounded-full text-sm font-medium cursor-pointer"
             >
-              <X className="w-4 h-4 inline mr-1" />
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              icon={<Save className="w-4 h-4" />}
+              className="px-4 py-2 text-sm font-medium"
               onClick={handleSubmit(onSubmit)}
-              className="px-4 py-2 flex gap-1 bg-(--color-primary) text-white rounded-full text-sm font-medium cursor-pointer"
             >
-              <Save className="w-4 h-4 inline mr-1" />
               Salvar
-            </button>
+            </Button>
           </div>
         )}
 
@@ -194,28 +193,13 @@ export function Profile() {
       </div>
 
       {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
-            <h2 className="text-lg font-semibold text-(--color-primary)">Excluir conta</h2>
-            <p className="text-sm text-gray-600 text-center">
-              Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.
-            </p>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 h-10 border border-(--color-primary) text-(--color-primary) rounded-lg cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                className="flex-1 h-10 bg-red-500 text-white rounded-lg cursor-pointer"
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Excluir conta"
+          message="Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita."
+          confirmLabel="Excluir"
+          onConfirm={handleDeleteAccount}
+          onCancel={() => setShowDeleteModal(false)}
+        />
       )}
     </div>
   );
