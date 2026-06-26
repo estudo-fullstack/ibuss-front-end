@@ -1,6 +1,6 @@
 export function FilterButton() {
   return (
-    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E3F2FD] rounded-full shadow-sm text-sm text-[#0D47A1]">
+    <button className="flex items-center gap-2 px-4 py-2 font-medium bg-white border border-[#E3F2FD] rounded-full cursor-pointer shadow-sm text-sm text-[#0D47A1]">
       <svg
         width="16"
         height="16"
