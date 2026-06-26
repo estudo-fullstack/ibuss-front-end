@@ -7,6 +7,7 @@ import { ResetPassword } from "../pages/ResetPassword/ResetPassword";
 import { Home } from "../pages/Home/Home";
 import { Profile } from "../pages/Profile/Profile";
 import { Buses } from "../pages/Buses/Buses";
+import { Wallet } from "../pages/Wallet/Wallet";
 
 
 export const publicRoutes = (
@@ -22,6 +23,7 @@ export const privateRoutes = (
   <>
     <Route path="/app/home" element={<Home />} />
     <Route path="/app/buses" element={<Buses />} />
+    <Route path="/app/wallet" element={<Wallet />} />
     <Route path="/app/profile" element={<Profile />} />
   </>
 );
