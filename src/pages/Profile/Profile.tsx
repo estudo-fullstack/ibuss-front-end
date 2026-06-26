@@ -9,12 +9,11 @@ import type { ProfileFormData } from "../../schemas/profile.schemas";
 import type { UserProfileType } from "../../api/types";
 
 import { Input } from "../../components/Input/Input";
+import { Header } from "../../components/Header/Header";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { ProfileField } from "../../components/ProfileField/ProfileField";
 import { Button } from "../../components/Button/Button";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
-
-import logo from "../../assets/icons/icon-ibuss.svg";
 
 // Mock dos dados do usuário — substituir pela chamada à API
 const mockUser: UserProfileType = {
@@ -64,9 +63,7 @@ export function Profile() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-97.5 min-h-screen flex flex-col gap-4 bg-(--color-background) shadow-[0_0_40px_rgba(0,0,0,0.15)] rounded-3xl overflow-y-auto relative">
-        <div className="px-6 pt-5 flex items-center justify-between">
-          <img src={logo} alt="Logo iBuss" className="w-20" />
-        </div>
+        <Header />
 
         <div className="flex flex-col items-center">
           <div className="relative">
