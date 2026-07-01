@@ -17,7 +17,7 @@ export async function getUserProfile(): Promise<UserProfileType> {
 }
 
 export async function updateUserProfile(data: UpdateUserType): Promise<UserProfileType> {
-  const response = await api.put("/users/me", data);
+  const response = await api.patch("/users/me", data);
   return response.data;
 }
 
