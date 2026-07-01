@@ -36,15 +36,15 @@ export function Login() {
     },
     onSuccess: (response) => {
       const token = response.accessToken;
-      const user = response.user;
-
+      const currentUserId = response.user.id;
+      
       if (token) {
         localStorage.setItem("token", token);
-        localStorage.setItem("user", user);
+        localStorage.setItem("currentUserId", currentUserId);
       }
 
       setSuccess(true);
-      
+
       navigate("/app/home");
     },
     onError: (error) => {
