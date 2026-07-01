@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 
 import { loginUser } from "../../api/user.api";
@@ -17,7 +17,6 @@ export function Login() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -26,7 +25,7 @@ export function Login() {
       password: "",
     },
   });
-
+  const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -36,14 +35,17 @@ export function Login() {
       setSubmitError(null);
     },
     onSuccess: (response) => {
-      const token = response.token ?? response.accessToken;
+      const token = response.accessToken;
+      const user = response.user;
 
       if (token) {
         localStorage.setItem("token", token);
+        localStorage.setItem("user", user);
       }
 
       setSuccess(true);
-      reset();
+      
+      navigate("/app/home");
     },
     onError: (error) => {
       if (typeof error.message === "string") {
