@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Pencil, Trash2, Save, X } from "lucide-react";
+import { User, Pencil, Trash2, Save, X, Loader2 } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 
 import { profileSchema } from "../../schemas/profile.schemas";
 import type { ProfileFormData } from "../../schemas/profile.schemas";
-import type { UserProfileType } from "../../api/types";
+import { getUserProfile, updateUserProfile } from "../../api/user.api";
 
 import { Input } from "../../components/Input/Input";
 import { Header } from "../../components/Header/Header";
@@ -15,18 +16,13 @@ import { ProfileField } from "../../components/ProfileField/ProfileField";
 import { Button } from "../../components/Button/Button";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
 
-// Mock dos dados do usuário — substituir pela chamada à API
-const mockUser: UserProfileType = {
-  id: 1,
-  name: "Maria da Silva",
-  cpf: "12345678910",
-  email: "mariadasilva@email.com",
-  phoneNumber: "+5521999095555",
-};
-
 export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -36,28 +32,83 @@ export function Profile() {
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: mockUser.name,
-      email: mockUser.email,
-      phoneNumber: mockUser.phoneNumber,
+    defaultValues: { name: "", email: "", phoneNumber: "" },
+  });
+
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserProfile,
+  });
+
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+      });
+    }
+  }, [user, reset]);
+
+  const updateMutation = useMutation({
+    mutationFn: updateUserProfile,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      setSuccess(true);
+      setIsEditing(false);
+    },
+    onError: (err) => {
+      if (typeof err.message === "string") {
+        setSubmitError(err.message);
+        return;
+      }
+      setSubmitError("Não foi possível atualizar o perfil. Tente novamente.");
     },
   });
 
   function onSubmit(data: ProfileFormData) {
-    // eslint-disable-next-line no-console
-    console.log(data);
-    // TODO: integrar com API de atualização de perfil
-    setIsEditing(false);
+    updateMutation.mutate(data);
   }
 
   function handleCancel() {
-    reset();
+    reset({
+      name: user?.name ?? "",
+      email: user?.email ?? "",
+      phoneNumber: user?.phoneNumber ?? "",
+    });
     setIsEditing(false);
   }
 
   function handleDeleteAccount() {
-    // TODO: integrar com API de exclusão de conta
     setShowDeleteModal(false);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <Loader2 className="w-8 h-8 animate-spin text-(--color-primary)" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-red-500">
+          {typeof error?.message === "string"
+            ? error.message
+            : "Erro ao carregar perfil."}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -68,9 +119,9 @@ export function Profile() {
         <div className="flex flex-col items-center">
           <div className="relative">
             <div className="w-24 h-24 rounded-full border-2 border-(--color-icons) flex items-center justify-center bg-white">
-              {mockUser.photo ? (
+              {user?.photo ? (
                 <img
-                  src={mockUser.photo}
+                  src={user.photo}
                   alt="Foto de perfil"
                   className="w-full h-full rounded-full object-cover"
                 />
@@ -90,21 +141,21 @@ export function Profile() {
           >
             <ProfileField
               label="Nome completo"
-              value={mockUser.name}
+              value={user?.name ?? ""}
               isEditing={isEditing}
               editContent={<Input name="name" register={register} error={errors.name?.message} />}
             />
 
             <ProfileField
               label="CPF"
-              value={mockUser.cpf}
+              value={user?.cpf ?? ""}
               isEditing={isEditing}
               helperText="O CPF não pode ser alterado."
             />
 
             <ProfileField
               label="Celular"
-              value={mockUser.phoneNumber}
+              value={user?.phoneNumber ?? ""}
               isEditing={isEditing}
               editContent={
                 <Controller
@@ -128,7 +179,7 @@ export function Profile() {
 
             <ProfileField
               label="E-mail"
-              value={mockUser.email}
+              value={user?.email ?? ""}
               isEditing={isEditing}
               editContent={
                 <Input
@@ -141,6 +192,10 @@ export function Profile() {
             />
           </div>
         </div>
+
+        {submitError && (
+          <p className="px-10 text-sm text-red-500 text-center">{submitError}</p>
+        )}
 
         {!isEditing && (
           <div className="flex justify-center gap-3">
@@ -178,8 +233,9 @@ export function Profile() {
               icon={<Save className="w-4 h-4" />}
               className="px-4 py-2 text-sm font-medium"
               onClick={handleSubmit(onSubmit)}
+              disabled={updateMutation.isPending}
             >
-              Salvar
+              {updateMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         )}
@@ -197,6 +253,21 @@ export function Profile() {
           onConfirm={handleDeleteAccount}
           onCancel={() => setShowDeleteModal(false)}
         />
+      )}
+
+      {success && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
+            <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
+            <p className="text-sm text-gray-600 text-center">Perfil atualizado com sucesso!</p>
+            <button
+              onClick={() => setSuccess(false)}
+              className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
+            >
+              OK
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
