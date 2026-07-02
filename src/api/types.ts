@@ -12,7 +12,7 @@ export type LoginUserType = {
 };
 
 export type UserProfileType = {
-  id: number;
+  id: string;
   name: string;
   cpf: string;
   email: string;
@@ -25,4 +25,13 @@ export type UpdateUserType = {
   email?: string;
   phoneNumber?: string;
   photo?: string;
+};
+
+export type AuthResponse = {
+  accessToken: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };

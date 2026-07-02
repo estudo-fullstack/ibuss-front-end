@@ -1,12 +1,12 @@
 import api from "../services/axios";
-import type { CreateUserType, LoginUserType, UserProfileType, UpdateUserType } from "./types";
+import type { CreateUserType, LoginUserType, UserProfileType, UpdateUserType, AuthResponse } from "./types";
 
 export async function createUser(data: CreateUserType) {
   const response = await api.post("/auth/register", data);
   return response.data;
 }
 
-export async function loginUser(data: LoginUserType) {
+export async function loginUser(data: LoginUserType): Promise<AuthResponse> {
   const response = await api.post("/auth/login", data);
   return response.data;
 }
