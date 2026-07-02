@@ -4,33 +4,14 @@ import { Header } from "../../components/Header/Header";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { TicketCard } from "../../components/TicketCard/TicketCard";
 import { FilterButton } from "../../components/FilterButton/FilterButton";
+import { getTickets } from "../../api/ticket.api";
 
-import type { Ticket } from "../../types/ticket.types";
+import type { TicketApiResponseType } from "../../api/types";
 
 export function Home() {
-  const { data: tickets, isLoading } = useQuery<Ticket[]>({
-    queryKey: ["tickets"],
-    queryFn: async () => {
-      // TODO: integrar com API
-      return [
-        {
-          id: "1",
-          time: "11:10",
-          origin: "Goiânia",
-          destination: "Anápolis",
-          qrCode: "mock-qr-code-1",
-          price: 7.95,
-        },
-        {
-          id: "2",
-          time: "20:30",
-          origin: "Anápolis",
-          destination: "Goiânia",
-          qrCode: "mock-qr-code-2",
-          price: 9.95,
-        },
-      ];
-    },
+  const { data: tickets, isLoading } = useQuery<TicketApiResponseType[]>({
+    queryKey: ["tickets", "active"],
+    queryFn: () => getTickets(),
   });
 
   return (
