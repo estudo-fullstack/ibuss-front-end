@@ -1,8 +1,13 @@
 export interface Ticket {
   id: string;
-  time: string;
-  origin: string;
-  destination: string;
-  qrCode: string;
-  price: number;
+  purchasePrice: number;
+  status: string;
+  purchaseAt: string;
+  usedAt: string | null;
+  route: {
+    routeNumber: string;
+    origin: string;
+    destination: string;
+    price: number;
+  };
 }
