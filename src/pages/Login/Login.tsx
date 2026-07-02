@@ -26,7 +26,6 @@ export function Login() {
     },
   });
   const navigate = useNavigate();
-  const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const loginMutation = useMutation({
@@ -42,8 +41,6 @@ export function Login() {
         localStorage.setItem("token", token);
         localStorage.setItem("currentUserId", currentUserId);
       }
-
-      setSuccess(true);
 
       navigate("/app/home");
     },
@@ -115,21 +112,6 @@ export function Login() {
           </span>
         </form>
       </div>
-
-      {success && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
-            <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
-            <p className="text-sm text-gray-600 text-center">Login realizado com sucesso!</p>
-            <button
-              onClick={() => setSuccess(false)}
-              className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
