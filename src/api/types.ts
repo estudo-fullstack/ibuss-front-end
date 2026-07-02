@@ -27,11 +27,27 @@ export type UpdateUserType = {
   photo?: string;
 };
 
-export type AuthResponse = {
+export type AuthResponseType = {
   accessToken: string;
   user: {
     id: string;
     name: string;
     email: string;
+  };
+};
+
+export type TicketStatusType = 'ACTIVE' | 'USED' | 'CANCELLED' | 'EXPIRED';
+
+export type TicketApiResponseType = {
+  id: string;
+  purchasePrice: number;
+  status: TicketStatusType;
+  purchaseAt: string;
+  usedAt: string | null;
+  route: {
+    routeNumber: string;
+    origin: string;
+    destination: string;
+    price: number;
   };
 };
