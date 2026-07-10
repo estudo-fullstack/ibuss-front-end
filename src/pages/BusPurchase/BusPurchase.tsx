@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { TicketCheck } from "lucide-react";
 
 import { Header } from "../../components/Header/Header";
 import { Navbar } from "../../components/Navbar/Navbar";
-import { busesMock } from "../../api/bus.mock";
+import { purchaseTicket } from "../../api/ticket.api";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -12,24 +13,45 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 export function BusPurchase() {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [purchased, setPurchased] = useState(false);
+  const [searchParams] = useSearchParams();
 
-  const bus = busesMock.find((item) => item.id === Number(id));
+  const [purchased, setPurchased] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const routeId = searchParams.get("routeId")!;
+  const purchasePrice = searchParams.get("purchasePrice");
+
+  const price = purchasePrice ? Number(purchasePrice) : 0;
+
+  const purchaseMutation = useMutation({
+    mutationFn: purchaseTicket,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: () => {
+      setPurchased(true);
+    },
+    onError: (error) => {
+      if (typeof error.message === "string") {
+        setSubmitError(error.message);
+        return;
+      }
+      setSubmitError("Não foi possível realizar a compra. Tente novamente.");
+    },
+  });
 
   function handlePurchase() {
-    // TODO: replace with real POST /tickets call once the endpoint is
-    // documented and confirmed with backend. For now this only simulates
-    // a successful purchase.
-    setPurchased(true);
+    purchaseMutation.mutate({ routeId, purchasePrice: price });
   }
-
-  if (!bus) {
+  
+  if (!routeId || !purchasePrice) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="w-full max-w-97.5 h-screen flex flex-col items-center justify-center gap-4 bg-(--color-background) shadow-[0_0_40px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden relative">
-          <p className="text-(--color-primary) font-bold">Ônibus não encontrado.</p>
+          <p className="text-(--color-primary) font-bold">
+            Parâmetros inválidos.
+          </p>
           <button
             onClick={() => navigate("/app/buses")}
             className="text-sm text-(--color-primary) underline cursor-pointer"
@@ -44,6 +66,7 @@ export function BusPurchase() {
     );
   }
 
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-97.5 h-screen flex flex-col gap-8 bg-(--color-background) shadow-[0_0_40px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden relative">
@@ -56,9 +79,9 @@ export function BusPurchase() {
                 aria-hidden="true"
                 className="w-1 self-stretch rounded-full bg-(--color-secondary)"
               />
-              <span className="flex-1 font-semibold text-(--color-primary)">{bus.line}</span>
+              <span className="flex-1 font-semibold text-(--color-primary)">{routeId}</span>
               <span className="text-sm font-semibold text-(--color-primary)">
-                {currencyFormatter.format(bus.price)}
+                {currencyFormatter.format(price)}
               </span>
             </div>
 
@@ -88,21 +111,29 @@ export function BusPurchase() {
                 aria-hidden="true"
                 className="w-1 self-stretch rounded-full bg-(--color-secondary)"
               />
-              <span className="flex-1 font-semibold text-(--color-primary)">{bus.line}</span>
+              <span className="flex-1 font-semibold text-(--color-primary)">{routeId}</span>
               <span className="text-sm font-semibold text-(--color-primary)">
-                {currencyFormatter.format(bus.price)}
+                {currencyFormatter.format(price)}
               </span>
             </div>
 
+            {submitError && (
+              <p className="text-sm font-medium text-red-500 text-center px-6">
+                {submitError}
+              </p>
+            )}
+
             <div className="flex flex-col items-center gap-4">
               <p className="text-sm font-medium text-(--color-primary) text-center px-6">
-                Ao clicar em comprar o valor da passagem será debitado de sua carteira
+                Ao clicar em comprar o valor da passagem será debitado de sua
+                carteira
               </p>
               <button
                 onClick={handlePurchase}
-                className="bg-(--color-primary) text-white font-bold px-10 py-3 rounded-xl cursor-pointer active:opacity-80"
+                disabled={purchaseMutation.isPending}
+                className="bg-(--color-primary) text-white font-bold px-10 py-3 rounded-xl cursor-pointer active:opacity-80 disabled:opacity-50"
               >
-                Comprar
+                {purchaseMutation.isPending ? "Comprando..." : "Comprar"}
               </button>
             </div>
           </div>

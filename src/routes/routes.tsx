@@ -24,7 +24,7 @@ export const privateRoutes = (
   <>
     <Route path="/app/home" element={<Home />} />
     <Route path="/app/buses" element={<Buses />} />
-    <Route path="/app/buses/:id" element={<BusPurchase />} />
+    <Route path="/app/buses/purchase" element={<BusPurchase />} />
     <Route path="/app/wallet" element={<Wallet />} />
     <Route path="/app/profile" element={<Profile />} />
   </>
