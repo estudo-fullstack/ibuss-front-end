@@ -45,7 +45,7 @@ export function PeriodFilter({
           type="month"
           value={selectedMonth}
           onChange={(e) => onMonthSelect(e.target.value)}
-          className="rounded-lg border border-color-secondary px-2 py-1 text-xs font-medium text-(--color-primary)"
+          className="rounded-lg border border-(--color-secondary) px-2 py-1 text-xs font-medium text-(--color-primary)"
         />
       )}
     </div>

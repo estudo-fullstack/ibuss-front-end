@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { CircleDollarSign } from "lucide-react";
-import { subDays, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import dayjs from "../../services/dayjs";
 
 import { walletBalanceMock, walletTransactionsMock } from "../../api/wallet.mock";
 import type { WalletTab } from "../../components/WalletTabs/WalletTabs";
@@ -20,41 +20,30 @@ export function Wallet() {
   const [activeTab, setActiveTab] = useState<WalletTab>("ALL");
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodFilterType>("30_DAYS");
 
-  const today = new Date();
-  const defaultMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  const defaultMonth = dayjs().format("YYYY-MM");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
 
   function calculateDateRange(period: PeriodFilterType, month: string) {
-    const now = new Date();
+    const now = dayjs();
 
     if (period === "15_DAYS") {
-      const start = subDays(now, 15);
-      return { start, end: now };
+      return { start: now.subtract(15, "day"), end: now };
     }
 
     if (period === "30_DAYS") {
-      const start = subDays(now, 30);
-      return { start, end: now };
+      return { start: now.subtract(30, "day"), end: now };
     }
 
-    const [year, monthNum] = month.split("-");
-    const start = startOfMonth(new Date(parseInt(year), parseInt(monthNum) - 1));
-    const end = endOfMonth(new Date(parseInt(year), parseInt(monthNum) - 1));
-    return { start, end };
+    const monthDate = dayjs(month, "YYYY-MM");
+    return { start: monthDate.startOf("month"), end: monthDate.endOf("month") };
   }
 
   const filteredTransactions = useMemo(() => {
     const { start, end } = calculateDateRange(selectedPeriod, selectedMonth);
 
     return walletTransactionsMock
-      .filter((t) => {
-        if (activeTab === "ALL") return true;
-        return t.type === activeTab;
-      })
-      .filter((t) => {
-        const transactionDate = new Date(t.createdAt);
-        return isWithinInterval(transactionDate, { start, end });
-      });
+      .filter((t) => activeTab === "ALL" || t.type === activeTab)
+      .filter((t) => dayjs(t.createdAt).isBetween(start, end, null, "[]"));
   }, [activeTab, selectedPeriod, selectedMonth]);
 
   function handleDeposit() {
@@ -73,9 +62,9 @@ export function Wallet() {
 
         <div className="flex flex-1 min-h-0 flex-col gap-6 overflow-y-auto px-6 pb-24">
           <div className="flex items-center justify-between gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <CircleDollarSign className="text-(--color-primary)" size={32} />
-              <span className="text-2xl font-extrabold text-(--color-primary)">
+            <div className="flex items-center gap-3">
+              <CircleDollarSign className="text-(--color-icons)" size={32} />
+              <span className="text-2xl font-extrabold text-(--color-icons)">
                 {balanceFormatter.format(walletBalanceMock)}
               </span>
             </div>
@@ -83,13 +72,13 @@ export function Wallet() {
             <button
               type="button"
               onClick={handleDeposit}
-              className="rounded-xl bg-(--color-primary) px-5 py-2 font-bold text-white cursor-pointer"
+              className="rounded-xl bg-(--color-primary) px-5 py-2 font-bold text-white"
             >
               Depositar
             </button>
           </div>
 
-          <div className="rounded-2xl bg-white px-1.5 py-1.5 shadow-sm">
+          <div className="rounded-2xl bg-white px-4 py-4 shadow-sm">
             <PeriodFilter
               selected={selectedPeriod}
               selectedMonth={selectedMonth}
