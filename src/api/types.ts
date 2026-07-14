@@ -51,3 +51,38 @@ export type TicketApiResponseType = {
     price: number;
   };
 };
+
+export type TicketPurchaseRequestType = {
+  routeId: string;
+  purchasePrice: number;
+};
+
+export type TicketPurchaseResponseType = {
+  ticketToken: string;
+  ticket: {
+    transactionAmount: number;
+    ticket: {
+      id: string;
+      status: TicketStatusType;
+      expiresAt: string;
+      route: {
+        origin: string;
+        destination: string;
+      };
+    };
+  };
+};
+
+export type BusApiResponseType = {
+  id: string;
+  dayOfWeek: number;
+  departureTime: string;
+  routeId: string;
+  route: {
+    routeNumber: string;
+    origin: string;
+    destination: string;
+    tripDuration: number;
+    price: number;
+  };
+};
