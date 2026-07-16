@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Pencil, Trash2, Save, X, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Save, X, Loader2 } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 
 import { profileSchema } from "../../schemas/profile.schemas";
 import type { ProfileFormData } from "../../schemas/profile.schemas";
 import { getUserProfile, updateUserProfile } from "../../api/user.api";
+
+import { isValidAvatarId } from "../../assets/avatars";
+import type { AvatarId } from "../../assets/avatars";
 
 import { Input } from "../../components/Input/Input";
 import { Header } from "../../components/Header/Header";
@@ -15,13 +18,16 @@ import { Navbar } from "../../components/Navbar/Navbar";
 import { ProfileField } from "../../components/ProfileField/ProfileField";
 import { Button } from "../../components/Button/Button";
 import { ConfirmModal } from "../../components/ConfirmModal/ConfirmModal";
+import { Avatar } from "../../components/Avatar/Avatar";
+import { AvatarPicker } from "../../components/AvatarPicker/AvatarPicker";
 
 export function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
+  const [pendingAvatarId, setPendingAvatarId] = useState<AvatarId | null>(null);
   const queryClient = useQueryClient();
 
   const {
@@ -55,6 +61,9 @@ export function Profile() {
     }
   }, [user, reset]);
 
+  const rawAvatarId = user?.avatarId;
+  const serverAvatarId = isValidAvatarId(rawAvatarId) ? rawAvatarId : null;
+
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
     onMutate: () => {
@@ -62,6 +71,7 @@ export function Profile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      setShowAvatarModal(false);
       setSuccess(true);
       setIsEditing(false);
     },
@@ -85,6 +95,16 @@ export function Profile() {
       phoneNumber: user?.phoneNumber ?? "",
     });
     setIsEditing(false);
+  }
+
+  function handleOpenAvatarModal() {
+    setSubmitError(null);
+    setPendingAvatarId(serverAvatarId); 
+    setShowAvatarModal(true);
+  }
+
+  function handleSaveAvatar() {
+    updateMutation.mutate({ avatarId: pendingAvatarId ?? undefined });
   }
 
   function handleDeleteAccount() {
@@ -118,18 +138,18 @@ export function Profile() {
 
         <div className="flex flex-col items-center">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full border-2 border-(--color-icons) flex items-center justify-center bg-white">
-              {user?.photo ? (
-                <img
-                  src={user.photo}
-                  alt="Foto de perfil"
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <User className="w-12 h-12 text-(--color-icons)" />
-              )}
+            <div className="w-24 h-24 rounded-full border-2 border-(--color-icons) flex items-center justify-center bg-white overflow-hidden">
+              <Avatar
+                avatarId={serverAvatarId}
+                size={96}
+                className="w-full h-full object-cover"
+              />
             </div>
-            <button className="absolute bottom-0 right-0 w-7 h-7 bg-(--color-icons) rounded-full flex items-center justify-center cursor-pointer">
+            <button
+              onClick={handleOpenAvatarModal}
+              aria-label="Alterar avatar"
+              className="absolute bottom-0 right-0 w-7 h-7 bg-(--color-icons) rounded-full flex items-center justify-center cursor-pointer"
+            >
               <Pencil className="w-3 h-3 text-white" />
             </button>
           </div>
@@ -193,7 +213,7 @@ export function Profile() {
           </div>
         </div>
 
-        {submitError && (
+        {submitError && !showAvatarModal && (
           <p className="px-10 text-sm text-red-500 text-center">{submitError}</p>
         )}
 
@@ -253,6 +273,46 @@ export function Profile() {
           onConfirm={handleDeleteAccount}
           onCancel={() => setShowDeleteModal(false)}
         />
+      )}
+
+      {showAvatarModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm max-h-[80vh] overflow-y-auto flex flex-col gap-4 shadow-lg">
+            <h2 className="text-lg font-semibold text-(--color-primary) text-center">
+              Escolha seu avatar
+            </h2>
+
+            <AvatarPicker selectedId={pendingAvatarId} onSelect={setPendingAvatarId} />
+
+            {submitError && (
+              <p className="text-sm text-red-500 text-center">{submitError}</p>
+            )}
+
+            <div className="flex justify-center gap-3">
+              <Button
+                variant="primary"
+                icon={<X className="w-4 h-4" />}
+                className="px-4 py-2 text-sm font-medium"
+                onClick={() => setShowAvatarModal(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                icon={<Save className="w-4 h-4" />}
+                className="px-4 py-2 text-sm font-medium"
+                onClick={handleSaveAvatar}
+                disabled={
+                  updateMutation.isPending ||
+                  pendingAvatarId === null ||
+                  pendingAvatarId === serverAvatarId
+                }
+              >
+                {updateMutation.isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {success && (

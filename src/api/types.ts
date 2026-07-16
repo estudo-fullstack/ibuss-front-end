@@ -17,14 +17,14 @@ export type UserProfileType = {
   cpf: string;
   email: string;
   phoneNumber: string;
-  photo?: string;
+  avatarId: string | null;
 };
 
 export type UpdateUserType = {
   name?: string;
   email?: string;
   phoneNumber?: string;
-  photo?: string;
+  avatarId?: string;
 };
 
 export type AuthResponseType = {
