@@ -1,5 +1,12 @@
 import api from "../services/axios";
-import type { CreateUserType, LoginUserType, UserProfileType, UpdateUserType, AuthResponseType } from "./types";
+import type {
+  AuthResponseType,
+  CreateUserType,
+  LoginUserType,
+  UpdateUserAvatarType,
+  UpdateUserType,
+  UserProfileType,
+} from "./types";
 
 export async function createUser(data: CreateUserType) {
   const response = await api.post("/auth/register", data);
@@ -18,6 +25,11 @@ export async function getUserProfile(): Promise<UserProfileType> {
 
 export async function updateUserProfile(data: UpdateUserType): Promise<UserProfileType> {
   const response = await api.patch("/users/me", data);
+  return response.data;
+}
+
+export async function updateUserAvatar(data: UpdateUserAvatarType): Promise<UserProfileType> {
+  const response = await api.patch("/users/me/avatar", data);
   return response.data;
 }
 

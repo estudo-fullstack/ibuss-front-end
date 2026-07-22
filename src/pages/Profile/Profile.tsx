@@ -7,7 +7,7 @@ import { PatternFormat } from "react-number-format";
 
 import { profileSchema } from "../../schemas/profile.schemas";
 import type { ProfileFormData } from "../../schemas/profile.schemas";
-import { getUserProfile, updateUserProfile } from "../../api/user.api";
+import { getUserProfile, updateUserAvatar, updateUserProfile } from "../../api/user.api";
 
 import { isValidAvatarId } from "../../assets/avatars";
 import type { AvatarId } from "../../assets/avatars";
@@ -26,6 +26,7 @@ export function Profile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pendingAvatarId, setPendingAvatarId] = useState<AvatarId | null>(null);
   const queryClient = useQueryClient();
@@ -72,6 +73,7 @@ export function Profile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       setShowAvatarModal(false);
+      setSuccessMessage("Perfil atualizado com sucesso!");
       setSuccess(true);
       setIsEditing(false);
     },
@@ -81,6 +83,26 @@ export function Profile() {
         return;
       }
       setSubmitError("Não foi possível atualizar o perfil. Tente novamente.");
+    },
+  });
+
+  const updateAvatarMutation = useMutation({
+    mutationFn: updateUserAvatar,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      setShowAvatarModal(false);
+      setSuccessMessage("Avatar atualizado com sucesso!");
+      setSuccess(true);
+    },
+    onError: (err) => {
+      if (typeof err.message === "string") {
+        setSubmitError(err.message);
+        return;
+      }
+      setSubmitError("Não foi possível atualizar o avatar. Tente novamente.");
     },
   });
 
@@ -99,12 +121,16 @@ export function Profile() {
 
   function handleOpenAvatarModal() {
     setSubmitError(null);
-    setPendingAvatarId(serverAvatarId); 
+    setPendingAvatarId(serverAvatarId);
     setShowAvatarModal(true);
   }
 
   function handleSaveAvatar() {
-    updateMutation.mutate({ avatarId: pendingAvatarId ?? undefined });
+    if (!pendingAvatarId) {
+      return;
+    }
+
+    updateAvatarMutation.mutate({ avatarId: pendingAvatarId });
   }
 
   function handleDeleteAccount() {
@@ -303,12 +329,12 @@ export function Profile() {
                 className="px-4 py-2 text-sm font-medium"
                 onClick={handleSaveAvatar}
                 disabled={
-                  updateMutation.isPending ||
+                  updateAvatarMutation.isPending ||
                   pendingAvatarId === null ||
                   pendingAvatarId === serverAvatarId
                 }
               >
-                {updateMutation.isPending ? "Salvando..." : "Salvar"}
+                {updateAvatarMutation.isPending ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </div>
@@ -319,9 +345,14 @@ export function Profile() {
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
             <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
-            <p className="text-sm text-gray-600 text-center">Perfil atualizado com sucesso!</p>
+            <p className="text-sm text-gray-600 text-center">
+              {successMessage ?? "Operação realizada com sucesso!"}
+            </p>
             <button
-              onClick={() => setSuccess(false)}
+              onClick={() => {
+                setSuccess(false);
+                setSuccessMessage(null);
+              }}
               className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
             >
               OK

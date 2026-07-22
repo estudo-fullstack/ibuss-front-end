@@ -27,6 +27,10 @@ export type UpdateUserType = {
   avatarId?: string;
 };
 
+export type UpdateUserAvatarType = {
+  avatarId: string;
+};
+
 export type AuthResponseType = {
   accessToken: string;
   user: {
