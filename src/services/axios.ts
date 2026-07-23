@@ -64,7 +64,7 @@ api.interceptors.response.use(
       });
     }
 
-    if (statusCode >= 500) {
+    if (typeof statusCode === "number" && statusCode >= 500) {
       return Promise.reject({
         statusCode,
         message: "Ocorreu um erro. Tente novamente mais tarde.",
