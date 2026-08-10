@@ -135,6 +135,12 @@ export function BusPurchase() {
               >
                 {purchaseMutation.isPending ? "Comprando..." : "Comprar"}
               </button>
+               <button
+                onClick={() => navigate("/app/buses")}
+                className="text-sm font-semibold text-(--color-primary) underline cursor-pointer"
+              >
+                ← Voltar 
+              </button>
             </div>
           </div>
         )}

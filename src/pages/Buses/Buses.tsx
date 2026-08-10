@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -27,19 +26,19 @@ function mapBusApiToBus(item: BusApiResponseType): Bus {
 export function Buses() {
   const navigate = useNavigate();
 
-  const { data: buses, isLoading, isError } = useQuery<BusApiResponseType[]>({
+  const {
+    data: buses,
+    isLoading,
+    isError,
+  } = useQuery<BusApiResponseType[]>({
     queryKey: ["buses"],
     queryFn: getBuses,
   });
 
-  const mappedBuses = isError
-    ? busesMock
-    : buses?.map(mapBusApiToBus) ?? [];
+  const mappedBuses = isError ? busesMock : (buses?.map(mapBusApiToBus) ?? []);
 
   function handleSelectBus(bus: Bus) {
-    navigate(
-      `/app/buses/purchase?routeId=${bus.routeId}&purchasePrice=${bus.price}`,
-    );
+    navigate(`/app/buses/purchase?routeId=${bus.routeId}&purchasePrice=${bus.price}`);
   }
 
   return (
@@ -55,13 +54,11 @@ export function Buses() {
           <FilterButton />
         </div>
 
-        <div className="px-6 pb-24">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-24">
           {isLoading ? (
-            <p className="text-center text-sm text-(--color-primary)">
-              Carregando...
-            </p>
+            <p className="text-center text-sm text-(--color-primary)">Carregando...</p>
           ) : (
-            <div className="w-full bg-white rounded-2xl shadow p-4 flex flex-col gap-2 mx-auto">
+            <div className="w-full bg-white rounded-2xl shadow p-4 flex flex-col">
               {mappedBuses.map((bus) => (
                 <BusCard key={bus.id} bus={bus} onSelect={handleSelectBus} />
               ))}

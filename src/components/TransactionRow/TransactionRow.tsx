@@ -20,7 +20,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
     <div className="flex items-center justify-between border-b border-gray-100 py-4 last:border-b-0">
       <span className="text-sm font-semibold text-gray-600">{label}</span>
 
-      <span className={`text-lg font-bold ${isDeposit ? "text-green-600" : "text-red-500"}`}>
+      <span className={`text-base font-semibold ${isDeposit ? "text-green-600" : "text-red-500"}`}>
         {valueFormatter.format(value)}
       </span>
     </div>

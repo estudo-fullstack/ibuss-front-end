@@ -43,7 +43,7 @@ export function Home() {
               </div>
             </div>
           ) : (
-            <div className="w-[85%] bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center gap-6">
+            <div className="w-full bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center gap-6">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">⚠️</span>
                 <p className="text-lg font-bold text-(--color-primary) text-center uppercase tracking-wider">
