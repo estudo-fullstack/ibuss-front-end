@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Header } from "../../components/Header/Header";
@@ -7,11 +8,19 @@ import { FilterButton } from "../../components/FilterButton/FilterButton";
 import { getTickets } from "../../api/ticket.api";
 
 import type { TicketApiResponseType } from "../../api/types";
+import type { TicketStatusType } from "../../api/types";
 
 export function Home() {
-  const { data: tickets, isLoading } = useQuery<TicketApiResponseType[]>({
-    queryKey: ["tickets", "active"],
-    queryFn: () => getTickets(),
+  const [selectedStatus, setSelectedStatus] =
+    useState<TicketStatusType>("ACTIVE");
+
+  const {
+    data: tickets,
+    isLoading,
+    refetch,
+  } = useQuery<TicketApiResponseType[]>({
+    queryKey: ["tickets", selectedStatus],
+    queryFn: () => getTickets(selectedStatus),
   });
 
   return (
@@ -24,8 +33,10 @@ export function Home() {
         </h1>
 
         <div className="w-full px-6 flex justify-end">
-          {" "}
-          <FilterButton />
+          <FilterButton
+            selectedStatus={selectedStatus}
+            onStatusChange={setSelectedStatus}
+          />
         </div>
 
         <div className="px-6 ">
@@ -37,7 +48,11 @@ export function Home() {
                 <TicketCard key={ticket.id} {...ticket} />
               ))}
               <div className="flex justify-center mt-6">
-                <button className="text-sm text-(--color-primary) underline cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => refetch()}
+                  className="text-sm text-(--color-primary) underline cursor-pointer"
+                >
                   Atualizar
                 </button>
               </div>
