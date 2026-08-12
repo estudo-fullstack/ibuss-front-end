@@ -37,7 +37,7 @@ export function FilterButton({
   }
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block text-[#0D47A1]">
       <svg
         className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
         width="16"
@@ -53,7 +53,7 @@ export function FilterButton({
       <select
         value={selectedStatus}
         onChange={(event) => onStatusChange(event.target.value as TicketStatusType)}
-        className="appearance-none pl-10 pr-8 py-2 font-medium bg-white border border-[#E3F2FD] rounded-full cursor-pointer shadow-sm text-sm text-[#0D47A1]"
+        className="appearance-none pl-10 pr-8 py-2 font-medium bg-white border border-[#E3F2FD] rounded-full cursor-pointer shadow-sm text-sm text-[#0D47A1] focus:outline-none focus:border-[#0D47A1]"
       >
         {Array.from(filterOptions ?? []).map(([value, label]) => (
           <option key={value} value={value}>
