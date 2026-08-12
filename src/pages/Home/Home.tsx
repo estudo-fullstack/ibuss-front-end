@@ -11,8 +11,7 @@ import type { TicketApiResponseType } from "../../api/types";
 import type { TicketStatusType } from "../../api/types";
 
 export function Home() {
-  const [selectedStatus, setSelectedStatus] =
-    useState<TicketStatusType>("ACTIVE");
+  const [selectedStatus, setSelectedStatus] = useState<TicketStatusType>("ACTIVE");
 
   const {
     data: tickets,
@@ -22,6 +21,13 @@ export function Home() {
     queryKey: ["tickets", selectedStatus],
     queryFn: () => getTickets(selectedStatus),
   });
+
+  const filterOptions = new Map <TicketStatusType, string>([
+    ["ACTIVE", "Ativos"],
+    ["USED", "Usados"],
+    ["CANCELED", "Cancelados"],
+    ["EXPIRED", "Expirados"],
+  ]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -36,6 +42,7 @@ export function Home() {
           <FilterButton
             selectedStatus={selectedStatus}
             onStatusChange={setSelectedStatus}
+            filterOptions={filterOptions}
           />
         </div>
 
