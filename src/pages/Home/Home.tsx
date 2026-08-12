@@ -10,6 +10,13 @@ import { getTickets } from "../../api/ticket.api";
 import type { TicketApiResponseType } from "../../api/types";
 import type { TicketStatusType } from "../../api/types";
 
+const filterOptions = new Map<TicketStatusType, string>([
+  ["ACTIVE", "Ativos"],
+  ["USED", "Usados"],
+  ["CANCELED", "Cancelados"],
+  ["EXPIRED", "Expirados"],
+]);
+
 export function Home() {
   const [selectedStatus, setSelectedStatus] = useState<TicketStatusType>("ACTIVE");
 
@@ -21,13 +28,6 @@ export function Home() {
     queryKey: ["tickets", selectedStatus],
     queryFn: () => getTickets(selectedStatus),
   });
-
-  const filterOptions = new Map <TicketStatusType, string>([
-    ["ACTIVE", "Ativos"],
-    ["USED", "Usados"],
-    ["CANCELED", "Cancelados"],
-    ["EXPIRED", "Expirados"],
-  ]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
