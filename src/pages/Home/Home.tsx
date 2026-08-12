@@ -38,7 +38,7 @@ export function Home() {
           Minhas passagens
         </h1>
 
-        <div className="w-full px-6 flex justify-end">
+        <div className="w-full px-14 flex justify-end">
           <FilterButton
             selectedStatus={selectedStatus}
             onStatusChange={setSelectedStatus}
