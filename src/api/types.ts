@@ -40,7 +40,7 @@ export type AuthResponseType = {
   };
 };
 
-export type TicketStatusType = 'ACTIVE' | 'USED' | 'CANCELLED' | 'EXPIRED';
+export type TicketStatusType = "ACTIVE" | "USED" | "CANCELED" | "EXPIRED";
 
 export type TicketApiResponseType = {
   id: string;

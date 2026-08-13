@@ -7,7 +7,7 @@ import type {
 } from "./types";
 
 export async function getTickets(
-  status: TicketStatusType = "ACTIVE",
+  status: TicketStatusType,
 ): Promise<TicketApiResponseType[]> {
   const response = await api.get<TicketApiResponseType[]>("/ticket", {
     params: { status },
