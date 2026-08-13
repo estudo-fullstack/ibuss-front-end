@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
-import { CircleDollarSign } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CircleDollarSign, Loader2 } from "lucide-react";
 import dayjs from "../../services/dayjs";
 
+import { getWalletBalance } from "../../api/wallet.api";
 import { walletBalanceMock, walletTransactionsMock } from "../../api/wallet.mock";
 import type { WalletTab } from "../../components/WalletTabs/WalletTabs";
 import type { PeriodFilterType } from "../../components/PeriodFilter/PeriodFilter";
@@ -19,6 +21,11 @@ const balanceFormatter = new Intl.NumberFormat("pt-BR", {
 export function Wallet() {
   const [activeTab, setActiveTab] = useState<WalletTab>("ALL");
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodFilterType>("30_DAYS");
+
+  const { data: balanceData, isLoading } = useQuery({
+    queryKey: ["walletBalance"],
+    queryFn: getWalletBalance,
+  });
 
   const defaultMonth = dayjs().format("YYYY-MM");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
@@ -64,9 +71,13 @@ export function Wallet() {
           <div className="flex items-center justify-between gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
             <div className="flex items-center gap-3">
               <CircleDollarSign className="text-(--color-icons)" size={32} />
-              <span className="text-2xl font-extrabold text-(--color-icons)">
-                {balanceFormatter.format(walletBalanceMock)}
-              </span>
+              {isLoading ? (
+                <Loader2 className="w-8 h-8 animate-spin text-(--color-primary)" />
+              ) : (
+                <span className="text-2xl font-extrabold text-(--color-icons)">
+                  {balanceFormatter.format(balanceData?.balance ?? walletBalanceMock)}
+                </span>
+              )}
             </div>
 
             <button
