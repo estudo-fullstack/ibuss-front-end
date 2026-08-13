@@ -2,7 +2,10 @@ import api from "../services/axios";
 import type {
   AuthResponseType,
   CreateUserType,
+  ForgotPasswordType,
   LoginUserType,
+  MessageResponseType,
+  ResetPasswordType,
   UpdateUserAvatarType,
   UpdateUserType,
   UserProfileType,
@@ -15,6 +18,16 @@ export async function createUser(data: CreateUserType) {
 
 export async function loginUser(data: LoginUserType): Promise<AuthResponseType> {
   const response = await api.post("/auth/login", data);
+  return response.data;
+}
+
+export async function forgotPassword(data: ForgotPasswordType): Promise<MessageResponseType> {
+  const response = await api.post<MessageResponseType>("/auth/forgot-password", data);
+  return response.data;
+}
+
+export async function resetPassword(data: ResetPasswordType) {
+  const response = await api.post("/auth/reset-password", data);
   return response.data;
 }
 

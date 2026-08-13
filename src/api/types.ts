@@ -11,6 +11,20 @@ export type LoginUserType = {
   password: string;
 };
 
+export type ForgotPasswordType = {
+  email: string;
+};
+
+export type MessageResponseType = {
+  message: string;
+};
+
+export type ResetPasswordType = {
+  id: string;
+  token: string;
+  password: string;
+};
+
 export type UserProfileType = {
   id: string;
   name: string;
