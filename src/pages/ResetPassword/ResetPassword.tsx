@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Lock } from "lucide-react";
 
+import { resetPassword } from "../../api/user.api";
 import { resetPasswordSchema } from "../../schemas/reset-password-schema";
 import type { ResetPasswordFormData } from "../../schemas/reset-password-schema";
 
@@ -12,10 +14,14 @@ import { Input } from "../../components/Input/Input";
 import logo from "../../assets/icons/icon-ibuss.svg";
 
 export function ResetPassword() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const token = searchParams.get("token");
+
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -25,14 +31,33 @@ export function ResetPassword() {
     },
   });
 
-  const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: resetPassword,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: () => {
+      navigate("/");
+    },
+    onError: (error) => {
+      if (typeof error.message === "string") {
+        setSubmitError(error.message);
+        return;
+      }
+      setSubmitError("Não foi possível redefinir a senha. Tente novamente.");
+    },
+  });
+
+  const hasValidLink = Boolean(id && token);
 
   function onSubmit(data: ResetPasswordFormData) {
-    // eslint-disable-next-line no-console
-    console.log(data);
-    // TODO: integrar com API de redefinição de senha
-    setSuccess(true);
-    reset();
+    if (!hasValidLink) {
+      setSubmitError("Link inválido. Verifique o link recebido no e-mail.");
+      return;
+    }
+    resetPasswordMutation.mutate({ id: id!, token: token!, password: data.password });
   }
 
   return (
@@ -70,11 +95,14 @@ export function ResetPassword() {
             error={errors.confirmPassword?.message}
           />
 
+          {submitError && <p className="w-full text-sm text-red-500 text-center">{submitError}</p>}
+
           <button
             type="submit"
+            disabled={resetPasswordMutation.isPending || !hasValidLink}
             className="w-35.5 h-8.5 bg-(--color-primary) text-white rounded-[10px] mt-2 cursor-pointer"
           >
-            Redefinir senha
+            {resetPasswordMutation.isPending ? "Redefinindo..." : "Redefinir senha"}
           </button>
 
           <Link to="/" className="text-sm text-(--color-primary) underline mt-3">
@@ -82,21 +110,6 @@ export function ResetPassword() {
           </Link>
         </form>
       </div>
-
-      {success && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
-            <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
-            <p className="text-sm text-gray-600 text-center">Senha redefinida com sucesso!</p>
-            <button
-              onClick={() => setSuccess(false)}
-              className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

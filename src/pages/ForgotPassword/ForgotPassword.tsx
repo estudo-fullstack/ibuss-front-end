@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { Mail } from "lucide-react";
 
+import { forgotPassword } from "../../api/user.api";
 import { forgotPasswordSchema } from "../../schemas/forgot-password-schema";
 import type { ForgotPasswordFormData } from "../../schemas/forgot-password-schema";
 
@@ -25,13 +27,30 @@ export function ForgotPassword() {
   });
 
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const forgotPasswordMutation = useMutation({
+    mutationFn: forgotPassword,
+    onMutate: () => {
+      setSubmitError(null);
+    },
+    onSuccess: (response) => {
+      setSuccessMessage(response.message);
+      setSuccess(true);
+      reset();
+    },
+    onError: (error) => {
+      if (typeof error.message === "string") {
+        setSubmitError(error.message);
+        return;
+      }
+      setSubmitError("Não foi possível enviar o link. Tente novamente.");
+    },
+  });
 
   function onSubmit(data: ForgotPasswordFormData) {
-    // eslint-disable-next-line no-console
-    console.log(data);
-    // TODO: integrar com API de recuperação de senha
-    setSuccess(true);
-    reset();
+    forgotPasswordMutation.mutate(data);
   }
 
   return (
@@ -60,11 +79,14 @@ export function ForgotPassword() {
             error={errors.email?.message}
           />
 
+          {submitError && <p className="w-full text-sm text-red-500 text-center">{submitError}</p>}
+
           <button
             type="submit"
+            disabled={forgotPasswordMutation.isPending}
             className="w-35.5 h-8.5 bg-(--color-primary) text-white rounded-[10px] mt-2 cursor-pointer"
           >
-            Enviar Link
+            {forgotPasswordMutation.isPending ? "Enviando..." : "Enviar Link"}
           </button>
 
           <Link to="/" className="text-sm text-(--color-primary) underline mt-3">
@@ -77,7 +99,7 @@ export function ForgotPassword() {
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl p-6 w-70 flex flex-col items-center gap-4 shadow-lg">
             <h2 className="text-lg font-semibold text-(--color-primary)">Sucesso!</h2>
-            <p className="text-sm text-gray-600 text-center">Link enviado para o seu e-mail!</p>
+            <p className="text-sm text-gray-600 text-center">{successMessage}</p>
             <button
               onClick={() => setSuccess(false)}
               className="mt-2 w-full h-10 bg-(--color-primary) text-white rounded-lg cursor-pointer"
