@@ -70,6 +70,22 @@ export type TicketApiResponseType = {
   };
 };
 
+export type TicketDetailsApiResponseType = {
+  id: string;
+  purchasePrice: number;
+  status: TicketStatusType;
+  purchaseAt: string;
+  usedAt: string | null;
+  expiresAt: string;
+  route: {
+    routeNumber: string;
+    origin: string;
+    destination: string;
+    departureLocation: string;
+    arrivalLocation: string;
+  };
+};
+
 export type TicketPurchaseRequestType = {
   routeId: string;
   purchasePrice: number;
