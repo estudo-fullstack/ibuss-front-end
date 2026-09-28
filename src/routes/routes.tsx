@@ -9,6 +9,7 @@ import { Profile } from "../pages/Profile/Profile";
 import { Buses } from "../pages/Buses/Buses";
 import { Wallet } from "../pages/Wallet/Wallet";
 import { BusPurchase } from "../pages/BusPurchase/BusPurchase";
+import { QRCodeTicket } from "../pages/QRCodeTicket/QRCodeTicket";
 
 
 export const publicRoutes = (
@@ -27,5 +28,6 @@ export const privateRoutes = (
     <Route path="/app/buses/purchase" element={<BusPurchase />} />
     <Route path="/app/wallet" element={<Wallet />} />
     <Route path="/app/profile" element={<Profile />} />
+    <Route path="/app/ticket/:ticketId" element={<QRCodeTicket />} />
   </>
 );

@@ -17,6 +17,7 @@
     "axios": "1.14.0",
     "dayjs": "1.11.21",
     "lucide-react": "^1.8.0",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-number-format": "^5.4.5",
