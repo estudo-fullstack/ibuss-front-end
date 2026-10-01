@@ -11,6 +11,12 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
+const inactiveMessages: Record<string, string> = {
+  USED: "Esta passagem já foi utilizada.",
+  CANCELED: "Esta passagem foi cancelada.",
+  EXPIRED: "Esta passagem expirou.",
+};
+
 export function QRCodeTicket() {
   const { ticketId } = useParams();
   const navigate = useNavigate();
@@ -40,6 +46,23 @@ export function QRCodeTicket() {
               </p>
               <p className="text-sm text-(--color-primary) text-center">
                 Não foi possível carregar esta passagem. Tente novamente mais tarde.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/app/home")}
+              className="text-sm font-semibold text-(--color-primary) underline cursor-pointer self-center"
+            >
+              ← Voltar para minhas passagens
+            </button>
+          </div>
+        ) : ticket.status !== "ACTIVE" ? (
+          <div className="px-6 flex flex-col gap-6">
+            <div className="w-full bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center gap-4">
+              <p className="text-lg font-bold text-(--color-primary) text-center">
+                QR Code indisponível
+              </p>
+              <p className="text-sm text-(--color-primary) text-center">
+                {inactiveMessages[ticket.status]}
               </p>
             </div>
             <button
