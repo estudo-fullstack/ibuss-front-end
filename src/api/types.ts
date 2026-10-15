@@ -107,16 +107,21 @@ export type TicketPurchaseResponseType = {
   };
 };
 
-export type BusApiResponseType = {
+export type RouteSearchParamsType = {
+  origin: string;
+  destination: string;
+};
+
+// O preço vem do banco como Decimal, que pode chegar como texto (ex.: "8.20").
+export type RouteApiResponseType = {
   id: string;
-  dayOfWeek: number;
-  departureTime: string;
-  routeId: string;
-  route: {
-    routeNumber: string;
-    origin: string;
-    destination: string;
-    tripDuration: number;
-    price: number;
+  routeNumber: string;
+  origin: string;
+  destination: string;
+  price: number | string;
+  departureLocation: string;
+  arrivalLocation: string;
+  company: {
+    name: string;
   };
 };
