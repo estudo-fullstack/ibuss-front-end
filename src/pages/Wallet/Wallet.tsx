@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { CircleDollarSign, Loader2 } from "lucide-react";
 import dayjs from "../../services/dayjs";
 
@@ -19,6 +20,7 @@ const balanceFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 export function Wallet() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<WalletTab>("ALL");
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodFilterType>("30_DAYS");
 
@@ -54,8 +56,7 @@ export function Wallet() {
   }, [activeTab, selectedPeriod, selectedMonth]);
 
   function handleDeposit() {
-    // TODO(nav): navegar para /app/wallet/recharge quando a branch
-    // feature/wallet-recharge-page (encadeada nesta) definir a rota.
+    navigate("/app/wallet/recharge");
   }
 
   return (
@@ -83,7 +84,7 @@ export function Wallet() {
             <button
               type="button"
               onClick={handleDeposit}
-              className="rounded-xl bg-(--color-primary) px-5 py-2 font-bold text-white"
+              className="rounded-xl bg-(--color-primary) px-5 py-2 font-bold text-white cursor-pointer"
             >
               Depositar
             </button>
