@@ -1,7 +1,7 @@
 import api from "../services/axios";
-import type { BusApiResponseType } from "./types";
+import type { RouteApiResponseType, RouteSearchParamsType } from "./types";
 
-export async function getBuses(): Promise<BusApiResponseType[]> {
-  const response = await api.get<BusApiResponseType[]>("/bus");
+export async function getRoutes(params: RouteSearchParamsType): Promise<RouteApiResponseType[]> {
+  const response = await api.get<RouteApiResponseType[]>("/list-routes", { params });
   return response.data;
 }
