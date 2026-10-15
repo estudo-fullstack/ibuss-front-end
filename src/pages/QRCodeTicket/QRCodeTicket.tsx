@@ -1,9 +1,10 @@
 import { QRCodeSVG } from "qrcode.react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { Header } from "../../components/Header/Header";
 import { Navbar } from "../../components/Navbar/Navbar";
+import { BackButton } from "../../components/BackButton/BackButton";
 import { getTicketById } from "../../api/ticket.api";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -19,7 +20,6 @@ const inactiveMessages: Record<string, string> = {
 
 export function QRCodeTicket() {
   const { ticketId } = useParams();
-  const navigate = useNavigate();
 
   const {
     data: ticket,
@@ -48,12 +48,7 @@ export function QRCodeTicket() {
                 Não foi possível carregar esta passagem. Tente novamente mais tarde.
               </p>
             </div>
-            <button
-              onClick={() => navigate("/app/home")}
-              className="text-sm font-semibold text-(--color-primary) underline cursor-pointer self-center"
-            >
-              ← Voltar para minhas passagens
-            </button>
+            <BackButton to="/app/home" label="Voltar para minhas passagens" />
           </div>
         ) : ticket.status !== "ACTIVE" ? (
           <div className="px-6 flex flex-col gap-6">
@@ -65,12 +60,7 @@ export function QRCodeTicket() {
                 {inactiveMessages[ticket.status]}
               </p>
             </div>
-            <button
-              onClick={() => navigate("/app/home")}
-              className="text-sm font-semibold text-(--color-primary) underline cursor-pointer self-center"
-            >
-              ← Voltar para minhas passagens
-            </button>
+            <BackButton to="/app/home" label="Voltar para minhas passagens" />
           </div>
         ) : (
           <div className="px-6 flex flex-col gap-10">
@@ -92,12 +82,7 @@ export function QRCodeTicket() {
               <br />
               para validar sua passagem
             </p>
-            <button
-              onClick={() => navigate("/app/home")}
-              className="text-sm font-semibold text-(--color-primary) underline cursor-pointer self-center"
-            >
-              ← Voltar para minhas passagens
-            </button>
+            <BackButton to="/app/home" label="Voltar para minhas passagens" />
           </div>
         )}
 
